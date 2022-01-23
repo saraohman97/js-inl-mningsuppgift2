@@ -1,41 +1,10 @@
+
+const output = document.querySelector('#todos');
 const form = document.querySelector('#todoForm');
 const input = document.querySelector('#todoInput');
-const output = document.querySelector('#output');
 
 let todos = [];
 
-//INVALID VARNING
-const validateInput = (input) => {
-  if(input.value.trim() === '') {
-    setError(input, 'Must add an todo')
-    return false;
-  }
-  else {
-    setSuccess(input)
-    return true;
-  }
-}
-const setError = (input, textMessage) => {
-  const parent = input.parentElement;
-  parent.classList.add('is-invalid');
-  parent.classList.remove('is-valid');
-  parent.querySelector('.invalid-input').innerText = textMessage;
-}
-
-const setSuccess = input => {
-  const parent = input.parentElement;
-  parent.classList.remove('is-invalid');
-  parent.classList.add('is-valid');
-}
-// const validate = input => {
-//   switch(input.type){
-//     case 'text': return validateInput(input)
-//     default:
-//       break;
-//   }
-// }
-
-//ADD AND REMOVE TODOS
 const fetchTodos = async () => {
   const res = await fetch('https://jsonplaceholder.typicode.com/todos')
   const data = await res.json()
@@ -96,23 +65,29 @@ const createNewTodo = title => {
   })
   .then(res => res.json())
   .then(data => {
-    console.log(data)
     todos.unshift(data);
     listTodos()
-    // output.prepend(createTodoElement(data))
   })
 }
 
-
-form.addEventListener('submit', e => {
+form.addEventListener('submit', (e) => {
   e.preventDefault();
-  if(input.value == '') {
-    //Msg varning: Invalid
-    validateInput(input)
-  }
-  else {
+
+  if(input.value !== '') {
+    input.classList.remove('is-invalid');
     createNewTodo(input.value);
     input.value = '';
     input.focus()
+  }
+  else {
+    input.classList.add('is-invalid');
+  }
+
+})
+
+output.addEventListener('click', e => {
+  if(e.target.type === 'button') {
+    todos = todos.filter(todo => todo.id !== e.target.parentNode.id);
+    listTodos();
   }
 })
